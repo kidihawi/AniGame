@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="hero">
+        <div class="form-box">
+            <div class="button-box">
+                <div id="btn"></div>
+                <button type="button" class="toggle-btn" onclick="login()">Log In</button>
+                <button type="button" class="toggle-btn" onclick="register()">Register</button>
+            </div>
+            <div class="social-icons">
+                <img src="images/twitter.png">
+                <img src="images/instagram.png">
+                <img src="images/social.png">
+            </div>
+            <form  id="login-form" class="input-group">
+                <input type="text" class="input-field" id="login-id" name="email" placeholder="User Id" required>
+                <input type="text" class="input-field" id="login-password" name="password" placeholder="Enter Password" required>
+                <input type="checkbox" class="check-box"><span>Remember me</span>
+                <button type="submit" id="login-button" class="submit-btn">Log In</button>
+            </form>
+            <form id="register-form" class="input-group">
+                <input type="text" class="input-field" id="register-id" placeholder="User Id" required>
+                <input type="email" class="input-field" id="register-email" placeholder="Email Id" required>
+                <input type="text" class="input-field" id="register-password" placeholder="Enter Password" required>
+                <input type="checkbox" class="check-box"><span>I agree to the terms & conditions</span>
+                <button type="submit" id="register-button" class="submit-btn">Register</button>
+            </form>
+        </div>
+        
+    </div>
+
+    <script>
+    var x =document.getElementById("login");
+    var y =document.getElementById("register");
+    var z =document.getElementById("btn");
+
+    function register(){
+        x.style.left = "-400px";
+        y.style.left = "50px";
+        z.style.left = "110px";
+    }
+    function login(){
+        x.style.left = "50px";
+        y.style.left = "450px";
+        z.style.left = "0";
+    }
+
+
+
+
+
+    </script>
+
+    <script type="module">
+
+
+        document.getElementById('login-button').addEventListener('submit', (event) => {
+                event.preventDefault();    
+        });
+
+
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, set, ref, child, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+    
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+        apiKey: "AIzaSyAW9wCe7H2zn3e7gEamuAUpjL2ow4lxGAQ",
+        authDomain: "anigame-ff3a9.firebaseapp.com",
+        projectId: "anigame-ff3a9",
+        storageBucket: "anigame-ff3a9.appspot.com",
+        messagingSenderId: "263926621908",
+        appId: "1:263926621908:web:178f832755c7985f793d41",
+        measurementId: "G-01ZDTQEQCC"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+        const auth = getAuth(app);
+        const dbref = ref(db);
+
+        const email = document.getElementById('login-id', 'register-id');
+        const password = document.getElementById('login-password', 'register-password');
+        const loginform = document.getElementById('login-form');
+        const registerform = document.getElementById('register-form')
+
+        // login
+        const LogIn = evt => {
+            evt.preventDefault();
+
+        signInWithEmailAndPassword(auth, email.value, password.value)
+        .then((credentials)=>{
+            get(child(dbref, 'UsersAuthList/' + credentials.user.uid)).then((snapshot) => {
+                if(snapshot.exists){
+                    sessionStorage.setItem("user-info", JSON.stringify({
+                        // fullname: snapshot.val().fullname
+                    }));
+                    sessionStorage.setItem("user-creds", JSON.stringify(credentials.user));
+                    window.location.assign('index.html');
+                }else{
+                    console.log("User not found");
+                    alert("This account does not exist");
+                }
+            });
+        })
+        .catch((error)=>{
+            alert(error.message);
+            console.log(error.code);
+            console.log(error.message); 
+        });
+        };
+
+        loginform.addEventListener('submit', LogIn);
+
+
+    </script>
+
+<!-- <script type="module">
+
+    
+
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, set, ref, child, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+
+    
+
+    const SignIn = evt => {
+        evt.preventDefault();
+
+        signInWithEmailAndPassword(auth, email.value, password.value)
+        .then((credentials)=>{
+            get(child(dbref, 'UsersAuthList/' + credentials.user.uid)).then((snapshot) => {
+                if(snapshot.exists){
+                    sessionStorage.setItem("user-info", JSON.stringify({
+                        // fullname: snapshot.val().fullname
+                    }));
+                    sessionStorage.setItem("user-creds", JSON.stringify(credentials.user));
+                    window.location.assign('index.html');
+                }else{
+                    console.log("User not found");
+                    alert("This account does not exist");
+                }
+            });
+        })
+        .catch((error)=>{
+            alert(error.message);
+            console.log(error.code);
+            console.log(error.message); 
+        });
+    };
+
+    signinform.addEventListener('submit', SignIn);
+
+    // MutationObserver to detect changes in input fields
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                console.log('Input value changed:', mutation.target.value);
+                // You can perform any actions you want here
+            }
+        });
+    });
+
+    // Configure MutationObserver to observe changes in input fields
+    const config = { attributes: true, subtree: true, attributeFilter: ['value'] };
+    observer.observe(document.getElementById('sign-in-email'), config);
+    observer.observe(document.getElementById('sign-in-password'), config);
+
+</script> -->
+
+
+<!-- <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, set, ref } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCc4wujPDzpH59brlpZBR46NwwtjPvZgQs",
+      authDomain: "authentication-app-38a8a.firebaseapp.com",
+      databaseURL: "https://authentication-app-38a8a-default-rtdb.firebaseio.com",
+      projectId: "authentication-app-38a8a",
+      storageBucket: "authentication-app-38a8a.appspot.com",
+      messagingSenderId: "909677297907",
+      appId: "1:909677297907:web:b0cc8f13436f83a5dff786"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase();
+    const auth = getAuth(app);
+
+    const email = document.getElementById('sign-up-email');
+    const password = document.getElementById('sign-up-password');
+    const fullname = document.getElementById('fullname');
+    const signupform = document.getElementById('sign-up-form');
+
+    const SignUp = evt => {
+        evt.preventDefault();
+
+        createUserWithEmailAndPassword(auth, email.value, password.value)
+        .then((credentials)=>{
+            set(ref(db, 'UsersAuthList/' + credentials.user.uid),{
+                fullname: fullname.value
+            });
+            sessionStorage.setItem("user-creds", JSON.stringify(credentials.user));
+            window.location.href = 'index.html';
+        })
+        .catch((error)=>{
+            alert(error.message);
+            console.log(error.code);
+            console.log(error.message); 
+        });
+
+    };
+
+    signupform.addEventListener('submit', SignUp);
+
+    // MutationObserver to detect changes in input fields
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                console.log('Input value changed:', mutation.target.value);
+                // You can perform any actions you want here
+            }
+        });
+    });
+
+    // Configure MutationObserver to observe changes in input fields
+    const config = { attributes: true, subtree: true, attributeFilter: ['value'] };
+    observer.observe(document.getElementById('fullname'), config);
+    observer.observe(document.getElementById('sign-up-email'), config);
+    observer.observe(document.getElementById('username'), config);
+    observer.observe(document.getElementById('sign-up-password'), config);
+
+</script> -->
+    
+</body>
+</html>
