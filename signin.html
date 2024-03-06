@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AniGame</title>
+    <title>AniGame</title>  
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -53,6 +53,7 @@
         import { getDatabase, set, ref, child, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
+
         const firebaseConfig = {
         apiKey: "AIzaSyAW9wCe7H2zn3e7gEamuAUpjL2ow4lxGAQ",
         authDomain: "anigame-ff3a9.firebaseapp.com",
@@ -79,14 +80,22 @@
             .then((credentials)=>{
                 get(child(dbref, 'UsersAuthList/' + credentials.user.uid)).then((snapshot) => {
                     if(snapshot.exists){
-                        sessionStorage.setItem("user-info", JSON.stringify({
+                        localStorage.setItem("user-info", JSON.stringify({
                             // fullname: snapshot.val().fullname
                         }));
-                        sessionStorage.setItem("user-creds", JSON.stringify(credentials.user));
+                        localStorage.setItem("user-creds", JSON.stringify(credentials.user));
                         window.location.assign('index.html');
+
+                        //Enable the sign-in button
+                        document.getElementById('sign-in-submit').disabled = false;
+
                     }else{
                         console.log("User not found");
                         alert("This account does not exist");
+
+                        // Disable the sign-in button
+                        document.getElementById('sign-in-submit').disabled = true;
+
                     }
                 });
             })
@@ -94,10 +103,19 @@
                 alert(error.message);
                 console.log(error.code);
                 console.log(error.message); 
+
+                // Disable the sign-in button
+                document.getElementById('sign-in-submit').disabled = true;
+    
             });
         };
 
         signinform.addEventListener('submit', SignIn);
+
+        //check if the user has signed in before
+        if (localStorage.getItem('isSignedIn')==='true'){
+            window.location.assign('index.html')
+        }    
 
         // MutationObserver to detect changes in input fields
         const observer = new MutationObserver(mutations => {
@@ -113,6 +131,19 @@
         const config = { attributes: true, subtree: true, attributeFilter: ['value'] };
         observer.observe(document.getElementById('sign-in-email'), config);
         observer.observe(document.getElementById('sign-in-password'), config);
+
+        if(window.location.pathname === '/signin.html' || window.location.pathname === '/signin')
+        document.getElementById('logo').addEventListener('click', function (e){
+            e.preventDefault()
+            document.getElementById('top').scrollIntoView({ behavior: 'smooth'})
+
+            localStorage.setItem('isSigned', true);
+            window.location.assign('index.html')
+        })
+        else if (localStorage.getItem('isSigned') === 'true'){
+            window.location.assign('index.html')
+        }
+
 
     </script>
 </body>
